@@ -5,8 +5,8 @@ import numpy as np
 run time is approx 3-4 min
 '''
 # set project directory (where all subject directories are)
-project_dir = '/Users/antonio/Desktop/proj-6396777a6881d56fbfcd0bbc/'
-out_dir = '/Users/antonio/Desktop/proj-6396777a6881d56fbfcd0bbc/atlas'
+project_dir = '/Users/antonio/Desktop/atlas_X/'
+out_dir = '/Users/antonio/Desktop/atlas_X/atlas'
 
 #make output directory if it does not exist
 if not os.path.exists(out_dir):
@@ -48,10 +48,15 @@ for jj in range(len(tract_names)):
     input_affine = img.affine
     
     # need to change this
-    n=234 # hard-coded for now to account for non-binarized
-    
+    #n=234 # hard-coded for now to account for non-binarized
+    max_sum = np.max(data)
     #normalize
-    data = data/n
+    data = data/max_sum
+    
+    #remove points < p = 0.5 too much - trying 0.3
+    data[data<0.3]=0
+    
+    # save tract map as nifti
     converted_array = np.array(data,dtype=np.float32)
     new_img = nib.Nifti1Image(converted_array,affine=input_affine) #turn into nifti
     filename = str(tract_count)+'_'+name[3]+'_'+name[0]+'_'+'[min_'+str(np.min(data))+'_'+'max_'+str(np.max(data))+']'+'.nii.gz'
